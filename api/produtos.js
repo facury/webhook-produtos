@@ -9,7 +9,7 @@ export default async function handler(req, res) {
 
     const query = body?.query || "";
 
-    const url = `https://nikimba.com.br/wp-json/wc/v3/products?search=${query}&per_page=3`;
+    const url = `https://nikimba.com.br/wp-json/wc/v3/products?search=${query}&per_page=20`;
 
     const auth = Buffer.from("ck_015309d814ed03a9e49759dc44a7cca3c52df1e1:cs_84ff1f5c68212a37d763c8c828866b5e322759c6").toString("base64");
 
