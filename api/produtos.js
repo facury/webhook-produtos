@@ -19,14 +19,25 @@ export default async function handler(req, res) {
       }
     });
 
-    const data = await response.json();
+   const data = await response.json();
 
-    const produtos = (data || []).map(p => ({
-      nome: p.name,
-      preco: p.price,
-      link: p.permalink,
-      imagem: p.images?.[0]?.src
-    }));
+// 🔍 DEBUG (MUITO IMPORTANTE)
+console.log("RETORNO API:", data);
+
+// Se não for array, retorna erro amigável
+if (!Array.isArray(data)) {
+  return res.status(200).json({
+    erro: "Erro ao buscar produtos",
+    detalhe: data
+  });
+}
+
+const produtos = data.map(p => ({
+  nome: p.name,
+  preco: p.price,
+  link: p.permalink,
+  imagem: p.images?.[0]?.src
+}));
 
     res.status(200).json({ produtos });
 
