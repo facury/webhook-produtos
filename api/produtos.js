@@ -75,7 +75,26 @@ if (isCodigo) {
     if (maxPrice) {
       produtos = produtos.filter(p => parseFloat(p.price) <= maxPrice);
     }
+if (corBuscada || tamanhoBuscado) {
+  produtos = produtos.filter(p => {
+    const atributos = p.attributes || [];
 
+    const cores = atributos
+      .filter(a => normalizar(a.name || "").includes("cor"))
+      .flatMap(a => a.options || [])
+      .map(op => normalizar(op));
+
+    const tamanhos = atributos
+      .filter(a => normalizar(a.name || "").includes("tamanho"))
+      .flatMap(a => a.options || [])
+      .map(op => normalizar(op));
+
+    const corOk = corBuscada ? cores.some(c => c.includes(normalizar(corBuscada))) : true;
+    const tamanhoOk = tamanhoBuscado ? tamanhos.some(t => t.includes(normalizar(tamanhoBuscado))) : true;
+
+    return corOk && tamanhoOk;
+  });
+}
  const palavras = normalizar(cleanQuery).split(" ").filter(p => p.length > 2);
 
 if (palavras.length) {
