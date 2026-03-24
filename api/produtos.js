@@ -14,14 +14,19 @@ function normalizar(texto) {
     .trim();
 }
     const query = (body?.query || "").toLowerCase();
-
+const isCodigo = /^\d+$/.test(query.trim());
     const match = query.match(/\d+/);
     const maxPrice = match ? parseFloat(match[0]) : null;
 
     const cleanQuery = query.replace(/\d+/g, "").trim();
 
-    const url = `https://nikimba.com.br/wp-json/wc/v3/products?search=${encodeURIComponent(cleanQuery)}&per_page=20&orderby=date&order=desc&status=publish&stock_status=instock`;
+   let url;
 
+if (isCodigo) {
+  url = `https://nikimba.com.br/wp-json/wc/v3/products?sku=${query}&per_page=5&status=publish`;
+} else {
+  url = `https://nikimba.com.br/wp-json/wc/v3/products?search=${encodeURIComponent(cleanQuery)}&per_page=20&orderby=date&order=desc&status=publish&stock_status=instock`;
+}
     const auth = Buffer.from("ck_0bda750a7b71cf6c7bf8c243b9c889e250cbb5b1:cs_1d38210914534ee7d7729da8a2aae473301f78d2").toString("base64");
 
     const response = await fetch(url, {
