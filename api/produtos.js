@@ -5,7 +5,14 @@ export default async function handler(req, res) {
     if (typeof body === "string") {
       body = JSON.parse(body);
     }
-
+function normalizar(texto) {
+  return texto
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // remove acentos
+    .replace(/\s+/g, " ")
+    .trim();
+}
     const query = (body?.query || "").toLowerCase();
 
     const match = query.match(/\d+/);
@@ -40,21 +47,20 @@ export default async function handler(req, res) {
       produtos = produtos.filter(p => parseFloat(p.price) <= maxPrice);
     }
 
-   const palavras = cleanQuery.split(" ").filter(p => p.length > 2);
+ const palavras = normalizar(cleanQuery).split(" ").filter(p => p.length > 2);
 
 if (palavras.length) {
   produtos = produtos.filter(p => {
-    const texto = `
+    const texto = normalizar(`
       ${p.name}
       ${p.slug}
       ${p.description || ""}
       ${p.short_description || ""}
-    `.toLowerCase();
+    `);
 
     return palavras.every(palavra => texto.includes(palavra));
   });
 }
-
     if (produtos.length === 0) {
       produtos = data;
     }
