@@ -72,12 +72,26 @@ if (palavras.length) {
 
     produtos = produtos.slice(0, 5);
 
-    const resultado = produtos.map(p => ({
-      nome: p.name,
-      preco: p.price ? `R$ ${parseFloat(p.price).toFixed(2)}` : "",
-      link: p.permalink,
-      imagem: p.images?.[0]?.src || ""
-    }));
+   const resultado = produtos.map(p => {
+  const atributos = p.attributes || [];
+
+  const coresAttr = atributos.find(a =>
+    (a.name || "").toLowerCase().includes("cor")
+  );
+
+  const tamanhosAttr = atributos.find(a =>
+    (a.name || "").toLowerCase().includes("tamanho")
+  );
+
+  return {
+    nome: p.name,
+    preco: p.price ? `R$ ${parseFloat(p.price).toFixed(2)}` : "",
+    link: p.permalink,
+    imagem: p.images?.[0]?.src || "",
+    cores: coresAttr?.options || [],
+    tamanhos: tamanhosAttr?.options || []
+  };
+});
 
     return res.status(200).json({ produtos: resultado });
   } catch (error) {
