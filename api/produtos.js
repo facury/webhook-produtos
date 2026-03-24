@@ -100,7 +100,17 @@ if (corBuscada || tamanhoBuscado) {
       .flatMap(a => a.options || [])
       .map(op => normalizar(op));
 
-    const corOk = corBuscada ? cores.some(c => c.includes(normalizar(corBuscada))) : true;
+const corOk = corBuscada
+  ? cores.some(c => {
+      const corItem = normalizar(c);
+      const corBusca = normalizar(corBuscada);
+
+      return (
+        corItem.includes(corBusca) ||
+        corBusca.includes(corItem)
+      );
+    })
+  : true;
     const tamanhoOk = tamanhoBuscado ? tamanhos.some(t => t.includes(normalizar(tamanhoBuscado))) : true;
 
     return corOk && tamanhoOk;
