@@ -18,7 +18,7 @@ const isCodigo = /^\d+$/.test(query.trim());
 const coresConhecidas = [
   "azul", "preto", "branco", "off white", "verde", "vermelho",
   "rosa", "bege", "amarelo", "marrom", "cinza", "nude", "lilás",
-  "lilas", "roxo", "laranja"
+  "lilas", "roxo", "laranja", "fischia", "canela", "grafite", 
 ];
 
 const tamanhosConhecidos = [
