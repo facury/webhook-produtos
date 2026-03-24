@@ -147,14 +147,16 @@ if (palavras.length) {
     (a.name || "").toLowerCase().includes("tamanho")
   );
 
-  return {
-    nome: p.name,
-    preco: p.price ? `R$ ${parseFloat(p.price).toFixed(2)}` : "",
-    link: p.permalink,
-    imagem: p.images?.[0]?.src || "",
-    cores: coresAttr?.options || [],
-    tamanhos: tamanhosAttr?.options || []
-  };
+return {
+  sku: p.sku || "",
+  nome: p.name,
+  preco: p.price ? `R$ ${parseFloat(p.price).toFixed(2)}` : "",
+  link: p.permalink,
+  imagem: p.images?.[0]?.src || "",
+  cores: coresAttr?.options || [],
+  tamanhos: tamanhosAttr?.options || []
+};
+     
 });
 if (!resultado || resultado.length === 0) {
   return res.status(200).json({ produtos: [] });
