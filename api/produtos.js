@@ -44,10 +44,21 @@ const tamanhoBuscado = tamanhosConhecidos.find(tamanho =>
 
     const cleanQuery = query.replace(/\d+/g, "").trim();
 
-   let url;
+let url;
+
+const buscaSoCorOuTamanho =
+  !isCodigo &&
+  (corBuscada || tamanhoBuscado) &&
+  normalizar(cleanQuery).split(" ").filter(p => p.length > 1).every(p =>
+    [...coresConhecidas, ...tamanhosConhecidos].some(item =>
+      normalizar(item) === p
+    )
+  );
 
 if (isCodigo) {
   url = `https://nikimba.com.br/wp-json/wc/v3/products?sku=${query}&per_page=5&status=publish`;
+} else if (buscaSoCorOuTamanho) {
+  url = `https://nikimba.com.br/wp-json/wc/v3/products?per_page=100&orderby=date&order=desc&status=publish&stock_status=instock`;
 } else {
   url = `https://nikimba.com.br/wp-json/wc/v3/products?search=${encodeURIComponent(cleanQuery)}&per_page=20&orderby=date&order=desc&status=publish&stock_status=instock`;
 }
