@@ -92,7 +92,9 @@ if (palavras.length) {
     tamanhos: tamanhosAttr?.options || []
   };
 });
-
+if (!resultado || resultado.length === 0) {
+  return res.status(200).json({ produtos: [] });
+}
     return res.status(200).json({ produtos: resultado });
   } catch (error) {
     console.error(error);
