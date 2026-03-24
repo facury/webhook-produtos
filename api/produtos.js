@@ -15,6 +15,30 @@ function normalizar(texto) {
 }
     const query = (body?.query || "").toLowerCase();
 const isCodigo = /^\d+$/.test(query.trim());
+const coresConhecidas = [
+  "azul", "preto", "branco", "off white", "verde", "vermelho",
+  "rosa", "bege", "amarelo", "marrom", "cinza", "nude", "lilás",
+  "lilas", "roxo", "laranja"
+];
+
+const tamanhosConhecidos = [
+  "pp", "p", "m", "g", "gg",
+  "g1", "g2", "g3", "g4",
+  "plus size", "plus"
+];
+
+const queryNormalizada = normalizar(query);
+
+// detectar cor
+const corBuscada = coresConhecidas.find(cor =>
+  queryNormalizada.includes(normalizar(cor))
+);
+
+// detectar tamanho
+const tamanhoBuscado = tamanhosConhecidos.find(tamanho =>
+  queryNormalizada.includes(normalizar(tamanho))
+);
+    
     const match = query.match(/\d+/);
     const maxPrice = match ? parseFloat(match[0]) : null;
 
