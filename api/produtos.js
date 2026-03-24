@@ -40,15 +40,20 @@ export default async function handler(req, res) {
       produtos = produtos.filter(p => parseFloat(p.price) <= maxPrice);
     }
 
-    const palavras = cleanQuery.split(" ").filter(p => p.length > 2);
+   const palavras = cleanQuery.split(" ").filter(p => p.length > 2);
 
-    if (palavras.length) {
-      produtos = produtos.filter(p =>
-        palavras.some(palavra =>
-          p.name.toLowerCase().includes(palavra)
-        )
-      );
-    }
+if (palavras.length) {
+  produtos = produtos.filter(p => {
+    const texto = `
+      ${p.name}
+      ${p.slug}
+      ${p.description || ""}
+      ${p.short_description || ""}
+    `.toLowerCase();
+
+    return palavras.every(palavra => texto.includes(palavra));
+  });
+}
 
     if (produtos.length === 0) {
       produtos = data;
