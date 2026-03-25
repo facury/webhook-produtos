@@ -168,7 +168,7 @@ if (palavras.length) {
 if (!resultado || resultado.length === 0) {
   return res.status(200).json({
     encontrado: false,
-    mensagem: "Não encontrei um produto com esse termo. Tente pesquisar por nome, código ou característica. Ex.: bata básica, 23303, manga longa.",
+    mensagem: "Não encontrei um produto com esse termo. Tente pesquisar por nome, código ou característica.",
     produtos: []
   });
 }
@@ -188,7 +188,7 @@ const listaFormatada = resultado.slice(0, 3).map((p, i) => {
 
 return res.status(200).json({
   encontrado: true,
-  mensagem: `Encontrei estas opções para você:\n\n${listaFormatada}`,
+  mensagem: `Veja as opções que encontrei para você:\n\n${listaFormatada}`,
   produtos: resultado
 });
     
