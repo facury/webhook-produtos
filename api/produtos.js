@@ -36,36 +36,98 @@ export default async function handler(req, res) {
     const queryNormalizada = normalizar(query);
 
     const coresConhecidas = [
-      "azul", "preto", "branco", "off white", "verde", "vermelho",
-      "rosa", "bege", "amarelo", "marrom", "cinza", "nude", "lilás",
-      "lilas", "roxo", "laranja", "fucsia", "fuschia", "canela",
-      "grafite", "vinho", "mescla", "caramelo", "petroleo", "petróleo",
-      "telha", "terra", "orquidea", "orquídea", "beterraba", "chumbo"
+      "azul",
+      "preto",
+      "branco",
+      "off white",
+      "verde",
+      "vermelho",
+      "rosa",
+      "bege",
+      "amarelo",
+      "marrom",
+      "cinza",
+      "nude",
+      "lilas",
+      "lilás",
+      "roxo",
+      "laranja",
+      "fucsia",
+      "fuschia",
+      "canela",
+      "grafite",
+      "vinho",
+      "mescla",
+      "caramelo",
+      "petroleo",
+      "petróleo",
+      "telha",
+      "terra",
+      "orquidea",
+      "orquídea",
+      "beterraba",
+      "chumbo"
     ];
 
     const tamanhosConhecidos = [
-      "pp", "p", "m", "g", "gg",
-      "g1", "g2", "g3", "g4", "g5", "g6",
-      "plus size", "plus"
+      "pp",
+      "p",
+      "m",
+      "g",
+      "gg",
+      "g1",
+      "g2",
+      "g3",
+      "g4",
+      "g5",
+      "g6",
+      "plus size",
+      "plus"
     ];
 
     const stopwords = [
-      "tem", "tenho", "quero", "gostaria", "oi", "ola", "olá",
-      "uma", "um", "de", "do", "da", "das", "dos",
-      "pra", "para", "ver", "me", "mostrar", "mostra",
-      "algo", "com", "na", "no", "nas", "nos", "e", "ou"
+      "tem",
+      "tenho",
+      "quero",
+      "gostaria",
+      "oi",
+      "ola",
+      "olá",
+      "uma",
+      "um",
+      "de",
+      "do",
+      "da",
+      "das",
+      "dos",
+      "pra",
+      "para",
+      "ver",
+      "me",
+      "mostrar",
+      "mostra",
+      "algo",
+      "com",
+      "na",
+      "no",
+      "nas",
+      "nos",
+      "e",
+      "ou"
     ];
 
     const skuEncontrado = queryNormalizada.match(/\b\d{4,}\b/)?.[0] || null;
     const isCodigo = !!skuEncontrado;
 
-    const corBuscada = coresConhecidas.find(cor =>
-      queryNormalizada.includes(normalizar(cor))
-    ) || null;
+    const corBuscada =
+      coresConhecidas.find((cor) =>
+        queryNormalizada.includes(normalizar(cor))
+      ) || null;
 
-    const tamanhoBuscado = tamanhosConhecidos.find(tamanho =>
-      queryNormalizada.includes(normalizar(tamanho))
-    ) || null;
+    const tamanhoBuscado =
+      tamanhosConhecidos.find((tamanho) =>
+        queryNormalizada.includes(normalizar(tamanho))
+      ) || null;
 
     const matchPreco = queryNormalizada.match(/\b(\d{2,5})\b/);
     const maxPrice = !isCodigo && matchPreco ? parseFloat(matchPreco[1]) : null;
@@ -73,7 +135,10 @@ export default async function handler(req, res) {
     let querySemFiltros = queryNormalizada;
 
     if (skuEncontrado) {
-      querySemFiltros = querySemFiltros.replace(new RegExp(`\\b${skuEncontrado}\\b`, "g"), " ");
+      querySemFiltros = querySemFiltros.replace(
+        new RegExp(`\\b${skuEncontrado}\\b`, "g"),
+        " "
+      );
     }
 
     if (corBuscada) {
@@ -81,7 +146,10 @@ export default async function handler(req, res) {
     }
 
     if (tamanhoBuscado) {
-      querySemFiltros = querySemFiltros.replace(normalizar(tamanhoBuscado), " ");
+      querySemFiltros = querySemFiltros.replace(
+        normalizar(tamanhoBuscado),
+        " "
+      );
     }
 
     if (maxPrice) {
@@ -95,20 +163,22 @@ export default async function handler(req, res) {
 
     const palavrasProduto = querySemFiltros
       .split(" ")
-      .map(p => singularizar(p))
-      .filter(p => p.length > 0 && !stopwords.includes(p));
+      .map((p) => singularizar(p))
+      .filter((p) => p.length > 0 && !stopwords.includes(p));
 
     let url;
 
-    // Busca ampla para permitir filtro AND confiável
     if (isCodigo) {
-      url = `https://nikimba.com.br/wp-json/wc/v3/products?sku=${encodeURIComponent(skuEncontrado)}&per_page=100&status=publish`;
+      url = `https://nikimba.com.br/wp-json/wc/v3/products?sku=${encodeURIComponent(
+        skuEncontrado
+      )}&per_page=100&status=publish`;
     } else {
-      url = `https://nikimba.com.br/wp-json/wc/v3/products?per_page=100&orderby=date&order=desc&status=publish&stock_status=instock`;
+      url =
+        "https://nikimba.com.br/wp-json/wc/v3/products?per_page=100&orderby=date&order=desc&status=publish&stock_status=instock";
     }
 
     const auth = Buffer.from(
-      "ck_0bda750a7b71cf6c7bf8c243b9c889e250cbb5b1:cs_1d38210914534ee7d7729da8a2aae473301f78d2"
+      "SUA_CONSUMER_KEY:SUA_CONSUMER_SECRET"
     ).toString("base64");
 
     const response = await fetch(url, {
@@ -123,41 +193,51 @@ export default async function handler(req, res) {
       return res.status(200).json({
         encontrado: false,
         mensagem: "Não consegui consultar o catálogo no momento.",
+        mensagem_1: "",
+        mensagem_2: "",
+        mensagem_3: "",
         produtos: []
       });
     }
 
     let produtos = data;
 
-    produtos = produtos.filter(p => {
-      const texto = normalizar(`
-        ${p.name || ""}
-        ${p.slug || ""}
-        ${p.description || ""}
-        ${p.short_description || ""}
-      `)
+    produtos = produtos.filter((p) => {
+      const nomeTexto = normalizar(`${p.name || ""}`)
         .split(" ")
-        .map(parte => singularizar(parte))
+        .map((parte) => singularizar(parte))
+        .join(" ");
+
+      const slugTexto = normalizar(`${p.slug || ""}`)
+        .split(" ")
+        .map((parte) => singularizar(parte))
+        .join(" ");
+
+      const categoriasTexto = (Array.isArray(p.categories) ? p.categories : [])
+        .map((cat) => normalizar(cat?.name || ""))
+        .join(" ")
+        .split(" ")
+        .map((parte) => singularizar(parte))
         .join(" ");
 
       const atributos = Array.isArray(p.attributes) ? p.attributes : [];
 
       const cores = atributos
-        .filter(a => normalizar(a.name || "").includes("cor"))
-        .flatMap(a => Array.isArray(a.options) ? a.options : [])
-        .map(op => normalizar(op));
+        .filter((a) => normalizar(a.name || "").includes("cor"))
+        .flatMap((a) => (Array.isArray(a.options) ? a.options : []))
+        .map((op) => normalizar(op));
 
       const tamanhos = atributos
-        .filter(a => normalizar(a.name || "").includes("tamanho"))
-        .flatMap(a => Array.isArray(a.options) ? a.options : [])
-        .map(op => normalizar(op));
+        .filter((a) => normalizar(a.name || "").includes("tamanho"))
+        .flatMap((a) => (Array.isArray(a.options) ? a.options : []))
+        .map((op) => normalizar(op));
 
       const sku = normalizar(p.sku || "");
 
       const skuOk = skuEncontrado ? sku === normalizar(skuEncontrado) : true;
 
       const corOk = corBuscada
-        ? cores.some(c => {
+        ? cores.some((c) => {
             const corItem = normalizar(c);
             const corFiltro = normalizar(corBuscada);
             return corItem.includes(corFiltro) || corFiltro.includes(corItem);
@@ -165,10 +245,13 @@ export default async function handler(req, res) {
         : true;
 
       const tamanhoOk = tamanhoBuscado
-        ? tamanhos.some(t => {
+        ? tamanhos.some((t) => {
             const tamanhoItem = normalizar(t);
             const tamanhoFiltro = normalizar(tamanhoBuscado);
-            return tamanhoItem === tamanhoFiltro || tamanhoItem.includes(tamanhoFiltro);
+            return (
+              tamanhoItem === tamanhoFiltro ||
+              tamanhoItem.includes(tamanhoFiltro)
+            );
           })
         : true;
 
@@ -177,7 +260,12 @@ export default async function handler(req, res) {
         : true;
 
       const produtoOk = palavrasProduto.length
-        ? palavrasProduto.every(palavra => texto.includes(palavra))
+        ? palavrasProduto.every(
+            (palavra) =>
+              nomeTexto.includes(palavra) ||
+              slugTexto.includes(palavra) ||
+              categoriasTexto.includes(palavra)
+          )
         : true;
 
       return skuOk && corOk && tamanhoOk && precoOk && produtoOk;
@@ -185,14 +273,14 @@ export default async function handler(req, res) {
 
     produtos = produtos.slice(0, 5);
 
-    const resultado = produtos.map(p => {
+    const resultado = produtos.map((p) => {
       const atributos = Array.isArray(p.attributes) ? p.attributes : [];
 
-      const coresAttr = atributos.find(a =>
+      const coresAttr = atributos.find((a) =>
         normalizar(a.name || "").includes("cor")
       );
 
-      const tamanhosAttr = atributos.find(a =>
+      const tamanhosAttr = atributos.find((a) =>
         normalizar(a.name || "").includes("tamanho")
       );
 
@@ -212,7 +300,8 @@ export default async function handler(req, res) {
     if (!resultado.length) {
       return res.status(200).json({
         encontrado: false,
-        mensagem: "Não encontrei um produto com esse termo. Tente pesquisar por nome, código, cor ou tamanho.",
+        mensagem:
+          "Não encontrei um produto com esse termo. Tente pesquisar por nome, código, cor ou tamanho.",
         mensagem_1: "",
         mensagem_2: "",
         mensagem_3: "",
@@ -248,6 +337,9 @@ export default async function handler(req, res) {
       encontrado: false,
       mensagem: "Erro interno no servidor.",
       detalhe: error.message,
+      mensagem_1: "",
+      mensagem_2: "",
+      mensagem_3: "",
       produtos: []
     });
   }
