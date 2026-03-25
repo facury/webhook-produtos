@@ -190,7 +190,7 @@ const mensagens = resultado.slice(0, 3).map((p, i) => {
 
     return res.status(200).json({
   encontrado: true,
-      mensagem: `Veja as opções que encontrei para você:\n\n$`,
+      mensagem: `Veja as opções que encontrei para você:\n\n`,
   mensagem_1: mensagens[0] || "",
   mensagem_2: mensagens[1] || "",
   mensagem_3: mensagens[2] || "",
