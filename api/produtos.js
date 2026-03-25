@@ -5,6 +5,16 @@ export default async function handler(req, res) {
     if (typeof body === "string") {
       body = JSON.parse(body);
     }
+function singularizar(palavra) {
+  return palavra
+    .replace(/oes$/i, "ao")
+    .replace(/aes$/i, "ao")
+    .replace(/ais$/i, "al")
+    .replace(/eis$/i, "el")
+    .replace(/ois$/i, "ol")
+    .replace(/res$/i, "r")
+    .replace(/s$/i, "");
+}
 function normalizar(texto) {
   return texto
     .toLowerCase()
@@ -123,23 +133,27 @@ const corOk = corBuscada
     return corOk && tamanhoOk;
   });
 }
- const palavras = normalizar(cleanQuery).split(" ").filter(p => p.length > 2);
+const palavras = normalizar(cleanQuery)
+  .split(" ")
+  .map(p => singularizar(p))
+  .filter(p => p.length > 0);
 
 if (palavras.length) {
   produtos = produtos.filter(p => {
-    const texto = normalizar(`
-      ${p.name}
-      ${p.slug}
-      ${p.description || ""}
-      ${p.short_description || ""}
-    `);
+ const texto = normalizar(`
+  ${p.name}
+  ${p.slug}
+  ${p.description || ""}
+  ${p.short_description || ""}
+`)
+  .split(" ")
+  .map(p => singularizar(p))
+  .join(" ");
 
     return palavras.every(palavra => texto.includes(palavra));
   });
 }
-    if (produtos.length === 0) {
-      produtos = data;
-    }
+
 
     produtos = produtos.slice(0, 5);
 
