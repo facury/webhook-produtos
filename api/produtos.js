@@ -108,7 +108,7 @@ export default async function handler(req, res) {
     }
 
     const auth = Buffer.from(
-      "SUA_CONSUMER_KEY:SUA_CONSUMER_SECRET"
+      "ck_0bda750a7b71cf6c7bf8c243b9c889e250cbb5b1:cs_1d38210914534ee7d7729da8a2aae473301f78d2"
     ).toString("base64");
 
     const response = await fetch(url, {
