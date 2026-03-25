@@ -13,6 +13,13 @@ function normalizar(texto) {
     .replace(/\s+/g, " ")
     .trim();
 }
+    function limparTexto(texto) {
+  return String(texto || "")
+    .replace(/[\u200B-\u200D\uFEFF]/g, "") // remove caracteres invisíveis
+    .replace(/\s+/g, " ")
+    .trim();
+}
+    
     const query = (body?.query || "").toLowerCase();
 const isCodigo = /^\d+$/.test(query.trim());
 const coresConhecidas = [
@@ -136,32 +143,55 @@ if (palavras.length) {
 
     produtos = produtos.slice(0, 5);
 
-   const resultado = produtos.map(p => {
+ const resultado = produtos.map(p => {
   const atributos = p.attributes || [];
 
   const coresAttr = atributos.find(a =>
-    (a.name || "").toLowerCase().includes("cor")
+    limparTexto(a.name).toLowerCase().includes("cor")
   );
 
   const tamanhosAttr = atributos.find(a =>
-    (a.name || "").toLowerCase().includes("tamanho")
+    limparTexto(a.name).toLowerCase().includes("tamanho")
   );
 
-return {
-  sku: p.sku || "",
-  nome: p.name,
-  preco: p.price ? `R$ ${parseFloat(p.price).toFixed(2)}` : "",
-  link: p.permalink,
-  imagem: p.images?.[0]?.src || "",
-  cores: coresAttr?.options || [],
-  tamanhos: tamanhosAttr?.options || []
-};
-     
+  return {
+    sku: limparTexto(p.sku || ""),
+    nome: limparTexto(p.name),
+    preco: p.price ? `R$ ${parseFloat(p.price).toFixed(2).replace(".", ",")}` : "",
+    link: limparTexto(p.permalink),
+    imagem: limparTexto(p.images?.[0]?.src || ""),
+    cores: (coresAttr?.options || []).map(limparTexto),
+    tamanhos: (tamanhosAttr?.options || []).map(limparTexto)
+  };
 });
+
 if (!resultado || resultado.length === 0) {
-  return res.status(200).json({ produtos: [] });
+  return res.status(200).json({
+    encontrado: false,
+    mensagem: "Não encontrei um produto com esse termo. Tente pesquisar por nome, código ou característica. Ex.: bata básica, 23303, manga longa.",
+    produtos: []
+  });
 }
-    return res.status(200).json({ produtos: resultado });
+
+const listaFormatada = resultado.slice(0, 3).map((p, i) => {
+  const linhas = [
+    `${i + 1}. ${p.nome}`,
+    p.sku ? `Código: ${p.sku}` : null,
+    p.preco ? `Preço: ${p.preco}` : null,
+    p.cores.length ? `Cores: ${p.cores.join(", ")}` : null,
+    p.tamanhos.length ? `Tamanhos: ${p.tamanhos.join(", ")}` : null,
+    p.link ? `Link: ${p.link}` : null
+  ].filter(Boolean);
+
+  return linhas.join("\n");
+}).join("\n\n");
+
+return res.status(200).json({
+  encontrado: true,
+  mensagem: `Encontrei estas opções para você:\n\n${listaFormatada}`,
+  produtos: resultado
+});
+    
   } catch (error) {
     console.error(error);
     return res.status(500).json({
