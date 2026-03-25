@@ -173,24 +173,30 @@ if (!resultado || resultado.length === 0) {
   });
 }
 
-const listaFormatada = resultado.slice(0, 3).map((p, i) => {
+const mensagens = resultado.slice(0, 3).map((p, i) => {
   const linhas = [
-    `${i + 1}. ${p.nome}`,
+    `${p.nome}`,
     p.sku ? `Código: ${p.sku}` : null,
     p.preco ? `Preço: ${p.preco}` : null,
     p.cores.length ? `Cores: ${p.cores.join(", ")}` : null,
     p.tamanhos.length ? `Tamanhos: ${p.tamanhos.join(", ")}` : null,
-    p.link ? `Link: ${p.link}` : null
+    "", // espaço antes do link
+    p.link
   ].filter(Boolean);
 
   return linhas.join("\n");
-}).join("\n\n");
+});
 
-return res.status(200).json({
+
+    return res.status(200).json({
   encontrado: true,
-  mensagem: `Veja as opções que encontrei para você:\n\n${listaFormatada}`,
+      mensagem: `Veja as opções que encontrei para você:\n\n${listaFormatada}`,
+  mensagem_1: mensagens[0] || "",
+  mensagem_2: mensagens[1] || "",
+  mensagem_3: mensagens[2] || "",
   produtos: resultado
 });
+    
     
   } catch (error) {
     console.error(error);
